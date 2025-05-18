@@ -1,0 +1,8 @@
+.git
+.gitignore
+.idea
+.venv
+Dockerfile*
+docker-compose.yml
+.env
+.env.default
