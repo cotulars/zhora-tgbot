@@ -1,5 +1,4 @@
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup, KeyboardButton, InlineKeyboardButton
-from pyrogram.filters import inline_keyboard
 
 from src.app import bot
 
