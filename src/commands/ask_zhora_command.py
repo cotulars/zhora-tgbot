@@ -15,14 +15,14 @@ router = Router()
 dp.include_router(router)
 
 async def ask_zhora_command(message: Message):
-    context = await generate_message_context(message.chat.id, count=100, tag='ask_zhora', threshold=50)
+    context = await generate_message_context(message.chat.id, count=60, tag='ask_zhora', threshold=40)
 
-    text = f'User request:\n"{message.text}"\n'
+    text = f'From: {message.from_user.full_name} ({message.from_user.username}) {message.from_user.id}\nUser request:\n"{message.text}"\n'
 
     if message.reply_to_message:
         text += f'reply to: {message.reply_to_message.message_id if message.reply_to_message else ""}'
 
-    with open("./src/prompts/ask_dark_prompt.txt", "r") as f:
+    with open("./src/prompts/ask_prompt.txt", "r") as f:
         prompt = f.read()
         response = await openai_client.chat.completions.create(
             model="gpt-4.1-mini",
@@ -41,7 +41,7 @@ async def ask_zhora_command(message: Message):
                     "content": [
                         {
                             "type": "text",
-                            "text": f"100-150 messages context:\n\n"
+                            "text": f"60-100 messages context:\n\n"
                                     f"{context}"
                         }
                     ]
