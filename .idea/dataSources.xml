@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="zhoradb@localhost" uuid="20c2a5b2-700c-4587-9a0c-803993f1e73a">
+    <data-source source="LOCAL" name="zhoradb@172.236.243.141" uuid="10dd73db-6d48-49aa-a5dc-de77de5de520">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/zhoradb</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="zhoradb@localhost [2]" uuid="b254c736-b360-4bf4-bcbb-dbba21c8be29">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/zhoradb</jdbc-url>
+      <jdbc-url>jdbc:postgresql://172.236.243.141:5432/zhoradb</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
