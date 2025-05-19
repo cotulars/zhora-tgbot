@@ -41,7 +41,7 @@ async def ask_zhora_command(message: Message):
                     "content": [
                         {
                             "type": "text",
-                            "text": f"50 messages context:\n\n"
+                            "text": f"200 messages context:\n\n"
                                     f"{context}"
                         }
                     ]

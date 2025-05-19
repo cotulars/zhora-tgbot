@@ -42,4 +42,4 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
 
     await users_db.close()
 
-    return json.dumps(request)
+    return json.dumps(request, ensure_ascii=False)
