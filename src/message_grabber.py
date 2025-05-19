@@ -1,13 +1,14 @@
 from datetime import timezone
 
 from telethon import TelegramClient, events
+from telethon.tl.custom.message import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.database import async_session
 
 from src.config import API_ID, API_HASH
 from src.database.database_main import init_db
 from src.database.domain.users_db import UsersDB
-from src.database.model.message_entity import Message
+from src.database.model.message_entity import Message as DBMessage
 from src.database.model.user_entity import User
 
 session_name = 'anon'  # путь до .session-файла юзербота
@@ -19,6 +20,7 @@ async def fetch_and_store_messages(chat_id: int, limit: int = 10000):
 
     a = 1
 
+    message: Message
     async for message in client.iter_messages(chat_id, limit=limit):
         if not message.text:  # игнор пустых (можно убрать)
             continue
@@ -41,12 +43,12 @@ async def fetch_and_store_messages(chat_id: int, limit: int = 10000):
         await udb.close()
 
         async with async_session() as session:
-            msg = Message(
-                id=message.id,
+            msg = DBMessage(
+                msg_id=message.id,
                 chat_id=message.chat_id,
                 user_id=message.sender_id,
                 text=message.text,
-                reply_to_msg_id=message.reply_to_msg_id if message.reply_to_msg_id else None,
+                reply_to_msg_id=message.reply_to_msg_id,
                 date=naive_utc_date
             )
             session.add(msg)
