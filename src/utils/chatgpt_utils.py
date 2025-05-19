@@ -12,10 +12,10 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
         messages = await MessagesDB.get_messages_from_msg_id_to_latest(chat_id, cotext_caching[tag])
         if len(messages) > (threshold+count):
             messages = await MessagesDB.get_messages(chat_id=chat_id, count=count)
-            cotext_caching[tag] = messages[-1].msg_id
+            cotext_caching[tag] = messages[0].msg_id
     else:
         messages = await MessagesDB.get_messages(chat_id=chat_id, count=count)
-        cotext_caching[tag] = messages[-1].msg_id
+        cotext_caching[tag] = messages[0].msg_id
 
     users_cache = {}
 
