@@ -15,7 +15,7 @@ router = Router()
 dp.include_router(router)
 
 async def ask_zhora_command(message: Message):
-    context = await generate_message_context(message.chat.id, count=100)
+    context = await generate_message_context(message.chat.id, count=200)
 
     text = f'User request:\n"{message.text}"\n'
 
