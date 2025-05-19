@@ -16,7 +16,7 @@ dp.include_router(router)
 
 @router.message(Command("sum"), F.chat.type.in_({"group", "supergroup"}))
 async def summary_cmd(message: Message):
-    context = await generate_message_context(message.chat.id, count=800)
+    context = await generate_message_context(message.chat.id, count=15000, tag='summary')
 
     msg = await message.reply("Выполняется...")
 
@@ -47,7 +47,7 @@ async def summary_cmd(message: Message):
             response_format={
                 "type": "text"
             },
-            temperature=1,
+            temperature=0.2,
             max_completion_tokens=5000,
             top_p=1,
             frequency_penalty=0,
