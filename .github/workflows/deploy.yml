@@ -43,14 +43,15 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
-            mkdir -p /home/app
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'ENDSSH'
+          mkdir -p /home/app
 
-            cat <<EOT > /home/app/.env
-            ${{ secrets.ENV_FILE }}
-            EOT
+          # Создаём .env из секрета
+          cat > /home/app/.env << 'EOT'
+          ${{ secrets.ENV_FILE }}
+          EOT
 
-            cd /home/app
-            docker-compose pull
-            docker-compose up -d --remove-orphans --pull always
-          EOF
+          cd /home/app
+          docker-compose pull
+          docker-compose up -d --remove-orphans --pull always
+          ENDSSH
