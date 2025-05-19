@@ -39,18 +39,18 @@ jobs:
       - name: Upload docker-compose.yml
         run: |
           scp -o StrictHostKeyChecking=no docker-compose.yml \
-          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/${{ secrets.SERVER_USER }}/zhora/docker-compose.yml
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/app/docker-compose.yml
 
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
-            mkdir -p /home/${{ secrets.SERVER_USER }}/zhora
+            mkdir -p /home/app
 
-            cat <<EOT > /home/${{ secrets.SERVER_USER }}/zhora/.env
+            cat <<EOT > /home/app/.env
             ${{ secrets.ENV_FILE }}
             EOT
 
-            cd /home/${{ secrets.SERVER_USER }}/zhora
+            cd /home/app
             docker-compose pull
             docker-compose up -d --remove-orphans --pull always
           EOF
