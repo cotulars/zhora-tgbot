@@ -3,6 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 
 from src.app import dp
+from src.database.domain.settings_db import SettingsDB
 from src.database.domain.users_db import UsersDB
 from src.database.model.user_entity import User
 

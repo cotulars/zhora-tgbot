@@ -23,7 +23,7 @@ class UserSettings:
     reply_to_mentions: bool = True
     timezone: int = 3
 
-class ChatsDB:
+class SettingsDB:
 
     @staticmethod
     async def init_settings_for_user(user_id: int):

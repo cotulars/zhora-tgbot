@@ -15,15 +15,16 @@ dp.include_router(router)
 
 @router.my_chat_member()
 async def on_added_to_chat(event: ChatMemberUpdated):
-    # Check if the bot was added to the chat
     if event.new_chat_member.user.id == bot.id:
-        await bot.send_message(event.chat.id, "Жора на связи")
         await ChatsDB.add_chat(
             Chat(
                 id=event.chat.id,
                 type=event.chat.type,
-                title=event.chat.title
+                title=event.chat.title,
+                members_count=await event.chat.get_member_count(),
+                isForum=event.chat.is_forum
             )
         )
+        await bot.send_message(event.chat.id, "Жора на связи")
 
 print("Added to chat handler loaded")

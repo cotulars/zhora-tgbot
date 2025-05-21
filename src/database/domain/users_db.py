@@ -6,6 +6,7 @@ from sqlalchemy.orm import class_mapper
 
 from src.app import redis_client
 from src.database.database import async_session
+from src.database.domain.settings_db import SettingsDB
 from src.database.model.user_entity import User
 
 def user_to_dict(obj: 'User'):
@@ -34,6 +35,7 @@ class UsersDB:
     async def add_user(self, user: 'User'):
         self.session.add(user)
         await self.session.commit()
+        await SettingsDB.init_settings_for_user(user.id)
 
     async def get_user(self, user_id: int, no_cache = False) -> Optional['User']:
         if not no_cache:

@@ -10,8 +10,7 @@ class Chat(Base):
     type = Column(String)
     title = Column(String)
     members_count = Column(Integer)
-    level = Column(Integer)
-    isPrivate = Column(Boolean, default=False)
+    isForum = Column(Boolean, default=False)
 
 
 

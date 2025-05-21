@@ -19,13 +19,15 @@ class PersistAllMessagesMiddleware(BaseMiddleware):
                     and (bot.id in [member.id for member in event.message.new_chat_members])):
                 return await handler(event, data)
 
+
+            print(await UsersDB.is_user_exists(msg.from_user.id))
             if not await UsersDB.is_user_exists(msg.from_user.id):
                 udb = UsersDB()
                 await udb.add_user(
                     User(
                         id=msg.from_user.id,
                         username=msg.from_user.username,
-                        name=f'{msg.from_user.first_name} {msg.from_user.last_name or ""}'
+                        name=msg.from_user.full_name,
                     )
                 )
                 await udb.close()
