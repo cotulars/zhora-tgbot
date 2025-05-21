@@ -22,7 +22,7 @@ async def ask_zhora_command(message: Message):
     if message.reply_to_message:
         text += f'reply to: {message.reply_to_message.message_id if message.reply_to_message else ""}'
 
-    with open("./src/prompts/ask_prompt.txt", "r") as f:
+    with open("./src/assets/prompts/ask_prompt.txt", "r") as f:
         prompt = f.read()
         response = await openai_client.chat.completions.create(
             model="gpt-4.1-mini",
