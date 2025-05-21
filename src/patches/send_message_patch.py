@@ -11,6 +11,9 @@ original_send_message = Bot.send_message
 async def custom_send_message(self, chat_id, text, *args, **kwargs) -> types.Message:
     message = await original_send_message(self, chat_id, text, *args, **kwargs)
 
+    if message.chat.type not in {"group", "supergroup"}:
+        return message
+
     naive_utc_date = message.date.astimezone(timezone.utc).replace(tzinfo=None)
 
     await MessagesDB.add_message(Message(

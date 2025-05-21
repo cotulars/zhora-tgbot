@@ -11,6 +11,9 @@ original_reply = types.Message.reply
 async def custom_reply(self, text, *args, **kwargs) -> types.Message:
     message = await original_reply(self, text, *args, **kwargs)
 
+    if message.chat.type not in {"group", "supergroup"}:
+        return message
+
     naive_utc_date = message.date.astimezone(timezone.utc).replace(tzinfo=None)
 
     await MessagesDB.add_message(Message(

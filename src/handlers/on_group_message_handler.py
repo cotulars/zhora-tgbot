@@ -30,6 +30,9 @@ class PersistAllMessagesMiddleware(BaseMiddleware):
                 )
                 await udb.close()
 
+            if msg.chat.type not in {"group", "supergroup"}:
+                return await handler(event, data)
+
             await MessagesDB.add_message(
                 Message(
                     chat_id=msg.chat.id,
