@@ -32,5 +32,6 @@ async def main():
 if __name__ == "__main__":
     from src.handlers import *
     from src.commands import *
+    from src.menus import *
     from src.patches import *
     asyncio.run(main())
