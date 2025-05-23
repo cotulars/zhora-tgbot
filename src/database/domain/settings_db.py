@@ -13,6 +13,10 @@ from src.database.model.user_settings_entity import UserSettingsDbEntity
 @dataclass
 class NotificationsSettings:
     enabled: bool = True
+
+@dataclass
+class ChatSettings:
+    reply_to_mentions: bool = True
     inactive_summary: bool = True
     inactive_summary_interval: int = 240 # in minutes
 
@@ -20,8 +24,9 @@ class NotificationsSettings:
 @dataclass
 class UserSettings:
     notifications: NotificationsSettings = field(default_factory=NotificationsSettings)
-    reply_to_mentions: bool = True
+    chats: dict[int, ChatSettings] = field(default_factory=dict)
     timezone: int = 3
+    lang: str = 'en'
 
 class SettingsDB:
 
@@ -45,7 +50,7 @@ class SettingsDB:
             response = result.scalar_one_or_none()
 
             if not response:
-                await ChatsDB.init_settings_for_user(user_id)
+                await SettingsDB.init_settings_for_user(user_id)
                 return
             else:
                 response.settings = dataclasses.asdict(settings)

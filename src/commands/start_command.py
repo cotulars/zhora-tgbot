@@ -6,6 +6,7 @@ from src.app import dp
 from src.database.domain.settings_db import SettingsDB
 from src.database.domain.users_db import UsersDB
 from src.database.model.user_entity import User
+from src.menus.main_menu import menu_main
 
 # Create a router for commands
 router = Router()
@@ -32,6 +33,8 @@ async def start_cmd(message: Message):
             user.is_activated = True
             await db.commit()
             await message.reply("Будем знакомы")
+
+    await menu_main(chat_id=message.chat.id)
 
     await db.close()
 

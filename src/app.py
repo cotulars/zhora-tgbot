@@ -1,4 +1,6 @@
+import aioredis
 import redis
+from google import genai
 from openai import AsyncOpenAI
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
@@ -13,6 +15,7 @@ bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
+redis_client = aioredis.from_url(f"redis://{REDIS_HOST}")     #redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
 
 openai_client = AsyncOpenAI(api_key=OPENAI_TOKEN)
+gemini_client = genai.Client(api_key=GEMINI_TOKEN)

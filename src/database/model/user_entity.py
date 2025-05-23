@@ -10,4 +10,3 @@ class User(Base):
     username = Column(String, nullable=True)
     name = Column(String)
     is_activated = Column(Boolean, default=False)
-

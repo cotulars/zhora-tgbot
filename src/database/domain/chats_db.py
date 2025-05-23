@@ -24,3 +24,14 @@ class ChatsDB:
             )
 
             return result.scalars().all()
+
+    @staticmethod
+    async def get_chat_info(chat_id):
+        session: AsyncSession
+        async with async_session() as session:
+            result = await session.execute(
+                sqlalchemy.select(Chat)
+                    .where(Chat.id == chat_id)
+            )
+
+            return result.scalars().first()

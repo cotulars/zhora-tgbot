@@ -15,7 +15,9 @@ API_HASH = os.environ.get("API_HASH", "")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 OWNER_ID = int(os.environ.get("OWNER_ID", 0))
 
+# AI Services
 OPENAI_TOKEN = os.environ.get("OPENAI_TOKEN", "")
+GEMINI_TOKEN = os.environ.get("GEMINI_TOKEN", "")
 
 # Redis configuration
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
