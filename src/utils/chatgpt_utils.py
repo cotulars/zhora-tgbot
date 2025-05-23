@@ -1,10 +1,15 @@
+import base64
 import json
 
+from src.app import openai_client, bot
+from src.database.domain.chats_db import ChatsDB
 from src.database.domain.messages_db import MessagesDB
 from src.database.domain.users_db import UsersDB
-
+from src.database.model.chat_entity import Chat
 
 cotext_caching = {}
+
+
 
 async def generate_message_context(chat_id, count = 100, tag='default', threshold=100) -> str:
 
@@ -17,29 +22,152 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
         messages = await MessagesDB.get_messages(chat_id=chat_id, count=count)
         cotext_caching[tag] = messages[0].msg_id
 
-    users_cache = {}
 
-    users_db = UsersDB()
-
-    request = []
+    members_list = []
+    messages_list = []
 
     for msg in messages:
-        if msg.user_id not in users_cache:
-            users_cache[msg.user_id] = await users_db.get_user(msg.user_id)
-
         message_dict = {
-            'id': msg.msg_id,
-            'from': {
-                'name': users_cache[msg.user_id].name,
-                'username': users_cache[msg.user_id].username,
-                'id': users_cache[msg.user_id].id
-            },
-            'reply_to': msg.reply_to_msg_id if msg.reply_to_msg_id else None,
-            'text': msg.text,
+            'message_id': msg.msg_id,
+            'from_user_id':  msg.user_id,
             'date': str(msg.date)
         }
-        request.append(message_dict)
+
+        if msg.text:
+            message_dict['message_text'] = msg.text
+
+        if msg.reply_to_msg_id:
+            message_dict['reply_to'] = msg.reply_to_msg_id
+            if msg.quote_from_reply:
+                message_dict['quote_from_reply'] = msg.quote_from_reply
+
+        if msg.is_forwarded:
+            message_dict['is_forward'] = True
+            message_dict['forward_from'] = msg.forward_from
+
+        if msg.is_sticker:
+            message_dict['is_sticker'] = True
+            message_dict['sticker_description'] = msg.sticker_description
+
+        if msg.media_content_type:
+            message_dict['media_content_type'] = msg.media_content_type
+            message_dict['media_content_description'] = msg.media_content_description
+            message_dict['media_content_id'] = msg.media_content_id
+
+        if msg.is_voice:
+            message_dict['is_voice'] = True
+            message_dict['voice_description'] = msg.voice_description
+
+        if msg.have_url:
+            message_dict['contains_url'] = True
+            message_dict['url_content_description'] = msg.url_content_description
+            message_dict['url_from_message'] = msg.url_raw
+
+
+        messages_list.append(message_dict)
+
+    users_db = UsersDB()
+    users = await UsersDB.get_users_from_chat(chat_id)
+
+    for user_id in users:
+        user = await users_db.get_user(user_id)
+
+        user_dict = {
+            'id': user.id,
+            'username': user.username,
+            'name': user.name,
+            'is_activated': user.is_activated,
+            'date_of_birth' : None,
+            'bio': None
+        }
+
+        members_list.append(user_dict)
 
     await users_db.close()
 
-    return json.dumps(request, ensure_ascii=False)
+    chat_raw_info: Chat = await ChatsDB.get_chat_info(chat_id)
+
+    chat_info = {
+        'id': chat_id,
+        'title': chat_raw_info.title,
+        'members_count': chat_raw_info.members_count,
+        'description': None,
+    }
+
+    response = {
+        'chat_info': chat_info,
+        'members': members_list,
+        'messages': messages_list
+    }
+
+    return json.dumps(messages_list, ensure_ascii=False)
+
+async def generate_photo_description(photo_id) -> str:
+    file = await bot.get_file(photo_id)
+    photo_file = await bot.download(file.file_path)
+    photo_bytes = photo_file.getvalue()
+    photo_base64 = base64.b64encode(photo_bytes).decode('utf-8')
+
+    with open(f"./src/assets/prompts/photo_description_prompt.txt", "r") as f:
+        prompt = f.read()
+        response = await openai_client.chat.completions.create(
+            model="gpt-4.1-nano",
+            messages=[
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        }
+                    ]
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": f"Photo ID: {photo_id}"
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{photo_base64}"
+                            }
+                        }
+                    ]
+                }
+            ]
+        )
+
+        return response.choices[0].message.content
+
+async def generate_voice_description(voice_id) -> str:
+    file = await bot.get_file(voice_id)
+    voice_file = await bot.download(file.file_path)
+
+    transcription = await openai_client.audio.transcriptions.create(
+        model="whisper-1",
+        file=voice_file
+    )
+
+    return transcription.text
+
+async def generate_sticker_description(chat_id, sticker_id):
+    pass
+
+async def generate_url_description(chat_id, url_id):
+    pass
+
+async def generate_video_description(video_id):
+    file = await bot.get_file(video_id)
+    video_file = await bot.download(file.file_path)
+
+async def generate_document_description(document_id):
+    file = await bot.get_file(document_id)
+    document_file = await bot.download(file.file_path)
+
+
+
+async def generate_audio_description(audio_id):
+    pass

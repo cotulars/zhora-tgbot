@@ -2,12 +2,15 @@ import json
 from typing import Optional
 
 import sqlalchemy
+from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import class_mapper
 
 from src.app import redis_client
 from src.database.database import async_session
 from src.database.domain.settings_db import SettingsDB
 from src.database.model.user_entity import User
+from src.database.model.user_in_chat_entity import UserInChat
+
 
 def user_to_dict(obj: 'User'):
     return {
@@ -68,3 +71,16 @@ class UsersDB:
 
     async def close(self):
         await self.session.close()
+
+
+    @staticmethod
+    async def get_users_from_chat(chat_id):
+        session: AsyncSession
+        async with async_session() as session:
+            result = await session.execute(
+                sqlalchemy.select(UserInChat.user_id)
+                          .where(UserInChat.chat_id == chat_id)
+            )
+            # scalars() возвращает только значения столбца, all() — сразу список
+            return result.scalars().all()
+

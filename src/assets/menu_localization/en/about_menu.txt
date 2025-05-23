@@ -1,0 +1,10 @@
+🤖 My name is Zhora the Bot, and I’m here to make your life easier and way more fun!
+I hang out in private chats and do all sorts of cool stuff:
+
+✨ Summarize long message threads
+📢 Mention everyone with one command
+💬 Understand and reply to just about anything!
+
+💻 My GitHub (check it out if you’re curious how I work):
+https://github.com/cotulars/zhora-tgbot
+👤 Creator: @cotulars

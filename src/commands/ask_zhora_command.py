@@ -72,7 +72,8 @@ async def ask_zhora_command(message: Message):
 async def ask_zhora_cmd(message: Message):
     await ask_zhora_command(message)
 
-@router.message(F.text.regexp(r"^жора ", flags=re.IGNORECASE), F.chat.type.in_({"group", "supergroup"}))
+
+@router.message(F.text.regexp(r"^жора.*", flags=re.IGNORECASE), F.chat.type.in_({"group", "supergroup"}))
 async def ask_zhora_regex_cmd(message: Message):
     await ask_zhora_command(message)
 
