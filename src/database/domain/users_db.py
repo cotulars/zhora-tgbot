@@ -2,11 +2,15 @@ import json
 from typing import Optional
 
 import sqlalchemy
+from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import class_mapper
 
 from src.app import redis_client
 from src.database.database import async_session
+from src.database.domain.settings_db import SettingsDB
 from src.database.model.user_entity import User
+from src.database.model.user_in_chat_entity import UserInChat
+
 
 def user_to_dict(obj: 'User'):
     return {
@@ -34,11 +38,12 @@ class UsersDB:
     async def add_user(self, user: 'User'):
         self.session.add(user)
         await self.session.commit()
+        await SettingsDB.init_settings_for_user(user.id)
 
     async def get_user(self, user_id: int, no_cache = False) -> Optional['User']:
         if not no_cache:
-            if redis_client.exists(f"user:{user_id}"):
-                return dict_to_user(json.loads(redis_client.get(f"user:{user_id}")))
+            if await redis_client.exists(f"user:{user_id}"):
+                return dict_to_user(json.loads(await redis_client.get(f"user:{user_id}")))
 
         result = await self.session.execute(
             sqlalchemy.select(User)
@@ -46,12 +51,12 @@ class UsersDB:
         )
         response = result.scalar_one_or_none()
         if response:
-            redis_client.set(f"user:{user_id}", json.dumps(user_to_dict(response)), ex=UsersDB.USER_TTL)
+            await redis_client.set(f"user:{user_id}", json.dumps(user_to_dict(response)), ex=UsersDB.USER_TTL)
         return response
 
     @staticmethod
     async def is_user_exists(user_id: int) -> bool:
-        if redis_client.exists(f"user:{user_id}"): return True
+        if await redis_client.exists(f"user:{user_id}"): return True
         else:
             db = UsersDB()
             if await db.get_user(user_id):
@@ -66,3 +71,16 @@ class UsersDB:
 
     async def close(self):
         await self.session.close()
+
+
+    @staticmethod
+    async def get_users_from_chat(chat_id):
+        session: AsyncSession
+        async with async_session() as session:
+            result = await session.execute(
+                sqlalchemy.select(UserInChat.user_id)
+                          .where(UserInChat.chat_id == chat_id)
+            )
+            # scalars() возвращает только значения столбца, all() — сразу список
+            return result.scalars().all()
+

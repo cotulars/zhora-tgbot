@@ -1,6 +1,7 @@
 from typing import List
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from src.database.database import async_session
 from src.database.model.message_entity import Message
@@ -46,3 +47,13 @@ class MessagesDB:
             )
             result = await session.execute(query)
             return result.scalars().all()
+
+    @staticmethod
+    async def get_message_by_id(chat_id: int, msg_id: int) -> Message:
+        session: AsyncSession
+        async with async_session() as session:
+            result = await session.execute(
+                select(Message)
+                    .filter_by(chat_id=chat_id, msg_id=msg_id)
+            )
+            return result.scalar_one_or_none()

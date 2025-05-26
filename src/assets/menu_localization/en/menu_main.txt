@@ -1,0 +1,2 @@
+Hi %s!
+Welcome to Zhora's main menu!

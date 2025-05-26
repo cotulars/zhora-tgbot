@@ -20,7 +20,7 @@ async def summary_cmd(message: Message):
 
     msg = await message.reply("Выполняется...")
 
-    with open("./src/prompts/summary_prompt.txt", "r") as f:
+    with open("./src/assets/prompts/summary_prompt.txt", "r") as f:
         prompt = f.read()
         response = await openai_client.chat.completions.create(
             model="gpt-4.1-mini",
