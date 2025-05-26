@@ -4,3 +4,4 @@ aiogram~=3.20.0.post0
 sqlalchemy~=2.0.41
 Telethon~=1.40.0
 asyncpg
+aioredis
