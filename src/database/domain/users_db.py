@@ -81,6 +81,5 @@ class UsersDB:
                 sqlalchemy.select(UserInChat.user_id)
                           .where(UserInChat.chat_id == chat_id)
             )
-            # scalars() возвращает только значения столбца, all() — сразу список
             return result.scalars().all()
 
