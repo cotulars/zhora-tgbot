@@ -115,7 +115,7 @@ async def generate_photo_description(photo_id) -> str:
     photo_bytes = photo_file.getvalue()
     photo_base64 = base64.b64encode(photo_bytes).decode('utf-8')
 
-    with open(f"./src/assets/prompts/photo_description_prompt.txt", "r") as f:
+    with open("./src/assets/prompts/photo_description_prompt.txt", "r") as f:
         prompt = f.read()
         response = await openai_client.chat.completions.create(
             model="gpt-4.1-nano",
@@ -191,7 +191,7 @@ async def generate_video_description(video_id) -> str:
     try:
         await wait_for_file_active(gemini_client, uploaded_video_file.name)
 
-        with open(f"./src/assets/prompts/video_description_prompt.txt", "r") as f:
+        with open("./src/assets/prompts/video_description_prompt.txt", "r") as f:
             prompt = f.read()
             response = await gemini_client.aio.models.generate_content(
                 model="gemini-2.0-flash-lite",
@@ -211,7 +211,7 @@ async def generate_video_description(video_id) -> str:
 
 async def generate_document_description(document_id) -> str:
     file = await bot.get_file(document_id)
-    document_file = await bot.download(file.file_path)
+    await bot.download(file=file)
 
     return 'Nothing'
 
@@ -224,7 +224,7 @@ async def generate_audio_description(audio_id) -> str:
     try:
         await wait_for_file_active(gemini_client, uploaded_audio_file.name)
 
-        with open(f"./src/assets/prompts/audio_description_prompt.txt", "r") as f:
+        with open("./src/assets/prompts/audio_description_prompt.txt", "r") as f:
             prompt = f.read()
             response = await gemini_client.aio.models.generate_content(
                 model="gemini-2.0-flash-lite",
