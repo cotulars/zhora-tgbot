@@ -78,6 +78,7 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
     messages_map = {}
 
     if len(members_list) == 0:
+        members_map = {}
         users_db = UsersDB()
         users = await UsersDB.get_users_from_chat(chat_id)
 
