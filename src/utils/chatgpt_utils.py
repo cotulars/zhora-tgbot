@@ -40,7 +40,7 @@ def get_message_dict(msg, current_msg_map):
     msg_str += f'<{msg.msg_id}>'
     msg_str += f'[{msg_type}] '
     msg_str += f'[{msg.date}] '
-    msg_str += f'{members_map[msg.user_id].name}(@{members_map[msg.user_id].username}) {fwd_suffix}: '
+    msg_str += f'{members_map[msg.user_id]["name"]}(@{members_map[msg.user_id]["username"]}) {fwd_suffix}: '
 
     if msg.media_content_type:
         msg_str += f'<{msg.media_content_type} media_id={msg.media_content_id}>'
@@ -51,9 +51,9 @@ def get_message_dict(msg, current_msg_map):
         repl_message = current_msg_map.get(msg.reply_to_msg_id, None)
         if repl_message:
             if msg.quote_from_reply:
-                msg_str += f' (reply to {msg.reply_to_msg_id} with quote) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id].name}: {msg.quote_from_reply}"'
+                msg_str += f' (reply to {msg.reply_to_msg_id} with quote) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: {msg.quote_from_reply}"'
             else:
-                msg_str += f' (reply to {msg.reply_to_msg_id}) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id].name}: {current_msg_map[msg.reply_to_msg_id].text or current_msg_map[msg.reply_to_msg_id].voice_description}"'
+                msg_str += f' (reply to {msg.reply_to_msg_id}) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: {current_msg_map[msg.reply_to_msg_id].text or current_msg_map[msg.reply_to_msg_id].voice_description}"'
         else:
             msg_str += f' (reply to {msg.reply_to_msg_id})'
 
