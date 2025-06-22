@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import base64
 import json
@@ -14,44 +16,51 @@ from src.database.model.chat_entity import Chat
 
 cotext_caching = {}
 
-def get_message_dict(msg):
-    message_dict = {
-        'message_id': msg.msg_id,
-        'from_user_id': msg.user_id,
-        'date': str(msg.date)
-    }
+members_list = []
+members_map: dict | None = None
 
-    if msg.text:
-        message_dict['message_text'] = msg.text
+def get_message_dict(msg, current_msg_map):
 
-    if msg.reply_to_msg_id:
-        message_dict['reply_to'] = msg.reply_to_msg_id
-        if msg.quote_from_reply:
-            message_dict['quote_from_reply'] = msg.quote_from_reply
+    msg_str = ''
 
-    if msg.is_forwarded:
-        message_dict['is_forward'] = True
-        message_dict['forward_from'] = msg.forward_from
+    fwd_suffix = ''
 
-    if msg.is_sticker:
-        message_dict['is_sticker'] = True
-        message_dict['sticker_description'] = msg.sticker_description
+    if msg.is_forward:
+        msg_type = 'FORWARDED_MESSAGE'
+        fwd_suffix = f' forwarded from {msg.forward_from.name}'
+    elif msg.is_sticker:
+        msg_type = 'STICKER'
+    elif msg.media_content_type:
+        msg_type = msg.media_content_type.capitalize()
+    elif msg.is_voice:
+        msg_type = 'VOICE_MESSAGE'
+    else:
+        msg_type = 'TEXT_MESSAGE'
+
+    msg_str += f'<{msg.msg_id}>'
+    msg_str += f'[{msg_type}] '
+    msg_str += f'[{msg.date}] '
+    msg_str += f'{members_map[msg.user_id].name}(@{members_map[msg.user_id].username}) {fwd_suffix}: '
 
     if msg.media_content_type:
-        message_dict['media_content_type'] = msg.media_content_type
-        message_dict['media_content_description'] = msg.media_content_description
-        message_dict['media_content_id'] = msg.media_content_id
+        msg_str += f'<{msg.media_content_type} media_id={msg.media_content_id}>'
+        msg_str += msg.media_content_description
+        msg_str += f' </{msg.media_content_type}>'
 
-    if msg.is_voice:
-        message_dict['is_voice'] = True
-        message_dict['voice_description'] = msg.voice_description
+    if msg.reply_to_msg_id:
+        repl_message = current_msg_map.get(msg.reply_to_msg_id, None)
+        if repl_message:
+            if msg.quote_from_reply:
+                msg_str += f' (reply to {msg.reply_to_msg_id} with quote) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id].name}: {msg.quote_from_reply}"'
+            else:
+                msg_str += f' (reply to {msg.reply_to_msg_id}) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id].name}: {current_msg_map[msg.reply_to_msg_id].text or current_msg_map[msg.reply_to_msg_id].voice_description}"'
+        else:
+            msg_str += f' (reply to {msg.reply_to_msg_id})'
 
-    if msg.have_url:
-        message_dict['contains_url'] = True
-        message_dict['url_content_description'] = msg.url_content_description
-        message_dict['url_from_message'] = msg.url_raw
+    if msg.text or msg.is_voice or msg.is_sticker:
+        msg_str += msg.text or msg.voice_description or msg.sticker_description
 
-    return message_dict
+    return msg_str
 
 
 async def generate_message_context(chat_id, count = 100, tag='default', threshold=100) -> str:
@@ -65,32 +74,35 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
         messages = await MessagesDB.get_messages(chat_id=chat_id, count=count)
         cotext_caching[tag] = messages[0].msg_id
 
-
-    members_list = []
     messages_list = []
+    messages_map = {}
+
+    if len(members_list) == 0:
+        users_db = UsersDB()
+        users = await UsersDB.get_users_from_chat(chat_id)
+
+        for user_id in users:
+            user = await users_db.get_user(user_id)
+
+            user_dict = {
+                'id': user.id,
+                'username': user.username,
+                'name': user.name,
+                'is_activated': user.is_activated,
+                'date_of_birth': None,
+                'bio': None
+            }
+
+            members_map[user.id] = user_dict
+            members_list.append(user_dict)
+
+        await users_db.close()
 
     for msg in messages:
-        message_dict = get_message_dict(msg)
+        message_dict = get_message_dict(msg, messages_map)
         messages_list.append(message_dict)
+        messages_map[msg.msg_id] = message_dict
 
-    users_db = UsersDB()
-    users = await UsersDB.get_users_from_chat(chat_id)
-
-    for user_id in users:
-        user = await users_db.get_user(user_id)
-
-        user_dict = {
-            'id': user.id,
-            'username': user.username,
-            'name': user.name,
-            'is_activated': user.is_activated,
-            'date_of_birth' : None,
-            'bio': None
-        }
-
-        members_list.append(user_dict)
-
-    await users_db.close()
 
     chat_raw_info: Chat = await ChatsDB.get_chat_info(chat_id)
 
@@ -104,10 +116,14 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
     response = {
         'chat_info': chat_info,
         'members': members_list,
-        'messages': messages_list
     }
 
-    return json.dumps(response, ensure_ascii=False)
+    resp = json.dumps(response, ensure_ascii=False)
+
+    resp += '\n\n'
+    resp += '\n'.join(messages_list)
+
+    return resp
 
 async def generate_photo_description(photo_id) -> str:
     file = await bot.get_file(photo_id)

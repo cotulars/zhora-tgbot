@@ -33,31 +33,6 @@ The first message will have a JSON structure of the following form:
     ...
 ]
 
-“messages” will have the following structure:
-
-[
-    {
-        "message_id": 12345678,                             // message id in this chat
-        "from_user_id": 12345678,                           // unique id of the user who sent this message
-        "date": 2025-05-26 06:44:49,                        // message send date
-        "message_text": "Привет жора",                      // !!OPTIONAL!! Message text. Might be absent
-        "reply_to": 12345678,                               // !!OPTIONAL!! id of the message this one replies to. This parameter will be absent if the message doesn't reply to another
-        "quote_from_reply": "пример цитаты",                // !!OPTIONAL!! A quote from the reply. Telegram allows replying to a specific part of a message. If a quote exists, it's here. Otherwise, absent
-        "is_forward": false,                                // Indicates whether this message is forwarded. true - forwarded, false - sent directly in the chat
-        "forward_from": "Кто-то",                           // !!OPTIONAL!! If the message is forwarded, this shows the source name. Otherwise, absent
-        "is_sticker": false,                                // true if this message is a sticker, otherwise false
-        "sticker_description": "Simple description",        // !!OPTIONAL!! Description of the sticker, if applicable
-        "media_content_type": "photo",                      // !!OPTIONAL!! When the message contains or is a media file, this field indicates its type: photo, video, document, audio. If not a media message, this is absent
-        "media_content_description": "Simple description",  // !!OPTIONAL!! Short description of what the media is or shows. Absent if not a media message
-        "media_content_id": "fewgwfefewfwefw",              // !!OPTIONAL!! id or reference to the media file for interaction. Absent if no media
-        "is_voice": false,                                  // true if this is a voice message, otherwise false
-        "voice_description": "Simple description",          // !!OPTIONAL!! Text transcription of the voice message, if applicable
-        "contains_url": false,                              // true if the message contains a URL, otherwise false
-        "url_content_description": "Simple description",    // !!OPTIONAL!! Brief description of the linked content. Absent if no URL
-        "url_from_message": "https://google.com"            // !!OPTIONAL!! The URL itself. Absent if not present in the message
-    }
-]
-
 Once you receive all necessary data, including the user request (formatted the same as a message object, but alone), your task is to begin reasoning.
 	1.	Think step by step. Logically derive each new thought from the previous one. Don’t be afraid to reflect after each step
 	2.	Start your thought chain by identifying important context — such as determining and rephrasing the message the user is referring to
