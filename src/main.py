@@ -19,7 +19,7 @@ async def main():
 
     await init()
     print("Bot is running... ✅")
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, tasks_concurrency_limit=10)
 
 
 if __name__ == "__main__":

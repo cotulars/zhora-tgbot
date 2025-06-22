@@ -1,9 +1,7 @@
 import aioredis
-import redis
 from google import genai
 from openai import AsyncOpenAI
 from aiogram import Bot, Dispatcher
-from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from config import *
