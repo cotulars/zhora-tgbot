@@ -55,7 +55,10 @@ def get_message_dict(msg, current_msg_map):
             else:
                 msg_str += f' (reply to {msg.reply_to_msg_id}) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: {current_msg_map[msg.reply_to_msg_id].text or current_msg_map[msg.reply_to_msg_id].voice_description}"'
         else:
-            msg_str += f' (reply to {msg.reply_to_msg_id})'
+            if msg.quote_from_reply:
+                msg_str += f' (reply to {msg.reply_to_msg_id})'
+            else:
+                msg_str += f' (reply to {msg.reply_to_msg_id} with quote) "{msg.quote_from_reply}"'
 
     if msg.text or msg.is_voice or msg.is_sticker:
         msg_str += msg.text or msg.voice_description or msg.sticker_description
@@ -123,8 +126,8 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
 
     resp = json.dumps(response, ensure_ascii=False)
 
-    resp += '\n\n'
-    resp += '\n'.join(messages_list)
+    resp += '\n\n\n'
+    resp += '\n----\n'.join(messages_list)
 
     return resp
 
