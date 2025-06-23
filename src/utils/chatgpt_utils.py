@@ -65,6 +65,7 @@ def get_message_dict(msg, current_msg_map):
 
 async def generate_message_context(chat_id, count = 100, tag='default', threshold=100) -> str:
     global members_map
+    global members_list
 
     if cotext_caching.get(tag, None):
         messages = await MessagesDB.get_messages_from_msg_id_to_latest(chat_id, cotext_caching[tag])
