@@ -65,7 +65,7 @@ async def ask_zhora_command(message: Message):
                     "content": [
                         {
                             "type": "text",
-                            "text": f"User request:\n\n{get_message_dict(await MessagesDB().get_message_by_id(message.chat.id, message.message_id))}"
+                            "text": f"User request:\n\n{get_message_dict(await MessagesDB().get_message_by_id(message.chat.id, message.message_id), {})}"
                         }
                     ]
                 }
