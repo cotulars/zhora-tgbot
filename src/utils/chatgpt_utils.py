@@ -103,7 +103,7 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
     for msg in messages:
         message_dict = get_message_dict(msg, messages_map)
         messages_list.append(message_dict)
-        messages_map[msg.msg_id] = message_dict
+        messages_map[msg.msg_id] = msg
 
 
     chat_raw_info: Chat = await ChatsDB.get_chat_info(chat_id)
