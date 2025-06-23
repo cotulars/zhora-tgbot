@@ -83,7 +83,7 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
         users_db = UsersDB()
         users = await UsersDB.get_users_from_chat(chat_id)
 
-        async for user_id in users:
+        for user_id in users:
             user = await users_db.get_user(user_id)
 
             user_dict = {
