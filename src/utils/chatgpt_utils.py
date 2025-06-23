@@ -99,6 +99,8 @@ async def generate_message_context(chat_id, count = 100, tag='default', threshol
             members_map[user.id] = user_dict
             members_list.append(user_dict)
 
+            print(user_dict)
+
         await users_db.close()
 
     print(messages_list)
