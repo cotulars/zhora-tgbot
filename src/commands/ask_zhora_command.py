@@ -32,9 +32,9 @@ async def user_parallel_limit(user_id: int):
 
 
 async def ask_zhora_command(message: Message):
-    context = await generate_message_context(message.chat.id, count=60, tag='ask_zhora', threshold=40)
+    bot.send_chat_action(message.chat.id, "typing")
 
-    msg = await message.reply("Думаю...")
+    context = await generate_message_context(message.chat.id, count=60, tag='ask_zhora', threshold=40)
 
     with open("./src/assets/prompts/ask_prompt.txt", "r") as f:
         prompt = f.read()
@@ -87,8 +87,6 @@ async def ask_zhora_command(message: Message):
         )
         resp: str = response.choices[0].message.content
         resp = re.sub(r"<thinking>.*?</thinking>", "", resp, flags=re.DOTALL)
-
-        await msg.delete()
 
         await message.reply(resp)
 
