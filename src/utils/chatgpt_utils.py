@@ -56,9 +56,9 @@ def get_message_dict(msg, current_msg_map):
                 msg_str += f' (reply to {msg.reply_to_msg_id}) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: {current_msg_map[msg.reply_to_msg_id].text or current_msg_map[msg.reply_to_msg_id].voice_description}"'
         else:
             if msg.quote_from_reply:
-                msg_str += f' (reply to {msg.reply_to_msg_id})'
-            else:
                 msg_str += f' (reply to {msg.reply_to_msg_id} with quote) "{msg.quote_from_reply}"'
+            else:
+                msg_str += f' (reply to {msg.reply_to_msg_id})'
 
     if msg.text or msg.is_voice or msg.is_sticker:
         msg_str += msg.text or msg.voice_description or msg.sticker_description
