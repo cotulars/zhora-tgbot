@@ -27,7 +27,7 @@ def get_message_dict(msg, current_msg_map):
 
     if msg.is_forwarded:
         msg_type = 'FORWARDED_MESSAGE'
-        fwd_suffix = f' forwarded from {msg.forward_from.name}'
+        fwd_suffix = f' forwarded from {msg.forward_from}'
     elif msg.is_sticker:
         msg_type = 'STICKER'
     elif msg.media_content_type:
