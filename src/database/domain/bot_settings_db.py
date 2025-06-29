@@ -19,7 +19,7 @@ class BotSettingsDB:
                 BotSettingsDB.settings[row.id] = row.value
 
     @staticmethod
-    async def get_setting(id: str):
+    def get_setting(id: str):
         if id in BotSettingsDB.settings:
             return BotSettingsDB.settings[id]
         else:

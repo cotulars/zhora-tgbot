@@ -33,90 +33,94 @@ async def user_parallel_limit(user_id: int):
 
 
 async def ask_zhora_command(message: Message):
-    bot.send_chat_action(message.chat.id, "typing")
+    try:
+        bot.send_chat_action(message.chat.id, "typing")
 
-    context = await generate_message_context(message.chat.id, count=60, tag='ask_zhora', threshold=40)
+        context = await generate_message_context(message.chat.id, count=60, tag='ask_zhora', threshold=40)
 
-    with open("./src/assets/prompts/ask_prompt.txt", "r") as f:
-        prompt = f.read()
-        if BotSettingsDB.get_setting("is_thinking_model") != "True":
-            response = await openai_client.chat.completions.create(
-                model=BotSettingsDB.get_setting("bot_model") or "gpt-4.1-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": prompt
-                            }
-                        ]
+        with open("./src/assets/prompts/ask_prompt.txt", "r") as f:
+            prompt = f.read()
+            if BotSettingsDB.get_setting("is_thinking_model") != "True":
+                response = await openai_client.chat.completions.create(
+                    model=BotSettingsDB.get_setting("bot_model") or "gpt-4.1-mini",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": prompt
+                                }
+                            ]
+                        },
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": f"{context}"
+                                }
+                            ]
+                        }
+                    ],
+                    response_format={
+                        "type": "text"
                     },
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": f"{context}"
-                            }
-                        ]
+                    temperature=0.8,
+                    max_completion_tokens=2000,
+                    top_p=1,
+                    frequency_penalty=0,
+                    presence_penalty=0,
+                    user=f"{message.from_user.id}",
+                    metadata={
+                        "type": "group_conversation",
+                        "chat": f"{message.chat.id}",
+                        "user": f"{message.from_user.id}"
                     }
-                ],
-                response_format={
-                    "type": "text"
-                },
-                temperature=0.8,
-                max_completion_tokens=2000,
-                top_p=1,
-                frequency_penalty=0,
-                presence_penalty=0,
-                user=f"{message.from_user.id}",
-                metadata={
-                    "type": "group_conversation",
-                    "chat": f"{message.chat.id}",
-                    "user": f"{message.from_user.id}"
-                }
-            )
+                )
 
-        else:
-            response = await openai_client.chat.completions.create(
-                model=BotSettingsDB.get_setting("bot_model"),
-                messages=[
-                    {
-                        "role": "developer",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": prompt
-                            }
-                        ]
+            else:
+                response = await openai_client.chat.completions.create(
+                    model=BotSettingsDB.get_setting("bot_model"),
+                    messages=[
+                        {
+                            "role": "developer",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": prompt
+                                }
+                            ]
+                        },
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": f"{context}"
+                                }
+                            ]
+                        }
+                    ],
+                    response_format={
+                        "type": "text"
                     },
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": f"{context}"
-                            }
-                        ]
+                    reasoning_effort=BotSettingsDB.get_setting("reasoning_effort"),
+                    user=f"{message.from_user.id}",
+                    metadata={
+                        "type": "group_conversation",
+                        "chat": f"{message.chat.id}",
+                        "user": f"{message.from_user.id}"
                     }
-                ],
-                response_format={
-                    "type": "text"
-                },
-                reasoning_effort=BotSettingsDB.get_setting("reasoning_effort"),
-                user=f"{message.from_user.id}",
-                metadata={
-                    "type": "group_conversation",
-                    "chat": f"{message.chat.id}",
-                    "user": f"{message.from_user.id}"
-                }
-            )
+                )
 
-        resp: str = response.choices[0].message.content
+            resp: str = response.choices[0].message.content
 
 
-        await message.reply(resp)
+            await message.reply(resp)
+
+    except Exception as e:
+        await message.reply("Something went wrong. Error:\n\n" + str(e))
 
 
 @router.message(Command("zhora"), F.chat.type.in_({"group", "supergroup"}))
