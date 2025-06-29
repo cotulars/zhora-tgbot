@@ -43,7 +43,7 @@ async def ask_zhora_command(message: Message):
             if BotSettingsDB.get_setting("is_thinking_model") != "True":
                 response = await openai_client.responses.create(
                     model=BotSettingsDB.get_setting("bot_model") or "gpt-4.1-mini",
-                    messages=[
+                    input=[
                         {
                             "role": "system",
                             "content": [
@@ -95,7 +95,7 @@ async def ask_zhora_command(message: Message):
             else:
                 response = await openai_client.responses.create(
                     model=BotSettingsDB.get_setting("bot_model"),
-                    messages=[
+                    input=[
                         {
                             "role": "developer",
                             "content": [
