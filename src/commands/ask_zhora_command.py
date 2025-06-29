@@ -41,7 +41,7 @@ async def ask_zhora_command(message: Message):
         with open("./src/assets/prompts/ask_prompt.txt", "r") as f:
             prompt = f.read()
             if BotSettingsDB.get_setting("is_thinking_model") != "True":
-                response = await openai_client.chat.completions.create(
+                response = await openai_client.responses.create(
                     model=BotSettingsDB.get_setting("bot_model") or "gpt-4.1-mini",
                     messages=[
                         {
@@ -63,24 +63,37 @@ async def ask_zhora_command(message: Message):
                             ]
                         }
                     ],
-                    response_format={
-                        "type": "text"
+                    text={
+                        "format": {
+                            "type": "text"
+                        }
+                    },
+                    reasoning={
+                        "effort": "medium",
+                        "summary": "auto"
                     },
                     temperature=0.8,
                     max_completion_tokens=2000,
-                    top_p=1,
-                    frequency_penalty=0,
-                    presence_penalty=0,
+                    tools=[
+                        {
+                            "type": "web_search_preview",
+                            "user_location": {
+                                "type": "approximate"
+                            },
+                            "search_context_size": "medium"
+                        }
+                    ],
                     user=f"{message.from_user.id}",
                     metadata={
                         "type": "group_conversation",
                         "chat": f"{message.chat.id}",
                         "user": f"{message.from_user.id}"
-                    }
+                    },
+                    store=True
                 )
 
             else:
-                response = await openai_client.chat.completions.create(
+                response = await openai_client.responses.create(
                     model=BotSettingsDB.get_setting("bot_model"),
                     messages=[
                         {
@@ -102,20 +115,34 @@ async def ask_zhora_command(message: Message):
                             ]
                         }
                     ],
-                    response_format={
-                        "type": "text"
+                    text={
+                        "format": {
+                            "type": "text"
+                        }
                     },
-                    reasoning_effort=BotSettingsDB.get_setting("reasoning_effort"),
+                    reasoning={
+                        "effort": "medium",
+                        "summary": None
+                    },
+                    tools=[
+                        {
+                            "type": "web_search_preview",
+                            "user_location": {
+                                "type": "approximate"
+                            },
+                            "search_context_size": "medium"
+                        }
+                    ],
                     user=f"{message.from_user.id}",
                     metadata={
                         "type": "group_conversation",
                         "chat": f"{message.chat.id}",
                         "user": f"{message.from_user.id}"
-                    }
+                    },
+                    store=True
                 )
 
-            resp: str = response.choices[0].message.content
-
+            resp: str = response.text
 
             await message.reply(resp)
 
