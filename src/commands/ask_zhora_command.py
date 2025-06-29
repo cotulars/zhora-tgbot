@@ -7,6 +7,7 @@ from aiogram.types import Message
 from aiogram.enums.chat_type import ChatType
 
 from src.app import dp, bot, openai_client, redis_client
+from src.database.domain.bot_settings_db import BotSettingsDB
 from src.database.domain.messages_db import MessagesDB
 from src.database.domain.users_db import UsersDB
 from src.utils.chatgpt_utils import generate_message_context, get_message_dict
@@ -38,44 +39,82 @@ async def ask_zhora_command(message: Message):
 
     with open("./src/assets/prompts/ask_prompt.txt", "r") as f:
         prompt = f.read()
-        response = await openai_client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": prompt
-                        }
-                    ]
+        if BotSettingsDB.get_setting("is_thinking_model") != "True":
+            response = await openai_client.chat.completions.create(
+                model=BotSettingsDB.get_setting("bot_model") or "gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": prompt
+                            }
+                        ]
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": f"{context}"
+                            }
+                        ]
+                    }
+                ],
+                response_format={
+                    "type": "text"
                 },
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": f"{context}"
-                        }
-                    ]
+                temperature=0.8,
+                max_completion_tokens=2000,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0,
+                user=f"{message.from_user.id}",
+                metadata={
+                    "type": "group_conversation",
+                    "chat": f"{message.chat.id}",
+                    "user": f"{message.from_user.id}"
                 }
-            ],
-            response_format={
-                "type": "text"
-            },
-            temperature=0.8,
-            max_completion_tokens=2000,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
-            user=f"{message.from_user.id}",
-            metadata={
-                "type": "group_conversation",
-                "chat": f"{message.chat.id}",
-                "user": f"{message.from_user.id}"
-            }
-        )
+            )
+
+        else:
+            response = await openai_client.chat.completions.create(
+                model=BotSettingsDB.get_setting("bot_model"),
+                messages=[
+                    {
+                        "role": "developer",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": prompt
+                            }
+                        ]
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": f"{context}"
+                            }
+                        ]
+                    }
+                ],
+                response_format={
+                    "type": "text"
+                },
+                reasoning_effort=BotSettingsDB.get_setting("reasoning_effort"),
+                user=f"{message.from_user.id}",
+                metadata={
+                    "type": "group_conversation",
+                    "chat": f"{message.chat.id}",
+                    "user": f"{message.from_user.id}"
+                }
+            )
+
         resp: str = response.choices[0].message.content
+
 
         await message.reply(resp)
 
