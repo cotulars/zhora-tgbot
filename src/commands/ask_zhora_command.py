@@ -23,7 +23,7 @@ async def user_parallel_limit(user_id: int):
         await redis_client.expire(key, 60)  # тайм-аут, чтобы зомби-ключи не оставались
 
     try:
-        if count > 3:
+        if count > 1:
             yield False
         else:
             yield True
@@ -55,17 +55,7 @@ async def ask_zhora_command(message: Message):
                     "content": [
                         {
                             "type": "text",
-                            "text": f"60-100 messages context:\n\n"
-                                    f"{context}"
-                        }
-                    ]
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": f"User request:\n\n{get_message_dict(await MessagesDB().get_message_by_id(message.chat.id, message.message_id), {})}"
+                            "text": f"{context}"
                         }
                     ]
                 }
@@ -74,7 +64,7 @@ async def ask_zhora_command(message: Message):
                 "type": "text"
             },
             temperature=0.8,
-            max_completion_tokens=5000,
+            max_completion_tokens=2000,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0,
@@ -86,7 +76,6 @@ async def ask_zhora_command(message: Message):
             }
         )
         resp: str = response.choices[0].message.content
-        resp = re.sub(r"<thinking>.*?</thinking>", "", resp, flags=re.DOTALL)
 
         await message.reply(resp)
 

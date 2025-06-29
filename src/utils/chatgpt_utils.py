@@ -43,22 +43,22 @@ def get_message_dict(msg, current_msg_map):
     msg_str += f'{members_map[msg.user_id]["name"]}(@{members_map[msg.user_id]["username"]}) {fwd_suffix}: '
 
     if msg.media_content_type:
-        msg_str += f'<{msg.media_content_type} media_id={msg.media_content_id}>'
+        msg_str += f'<media media_id={msg.media_content_id} media_type={msg.media_content_type}>'
         msg_str += msg.media_content_description
-        msg_str += f' </{msg.media_content_type}>'
+        msg_str += f' </media>'
 
     if msg.reply_to_msg_id:
         repl_message = current_msg_map.get(msg.reply_to_msg_id, None)
         if repl_message:
             if msg.quote_from_reply:
-                msg_str += f' (reply to {msg.reply_to_msg_id} with quote) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: {msg.quote_from_reply}"'
+                msg_str += f' <reply_to message_id={msg.reply_to_msg_id} quote=True> {members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: "{msg.quote_from_reply}" <reply_to>'
             else:
-                msg_str += f' (reply to {msg.reply_to_msg_id}) "{members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: {current_msg_map[msg.reply_to_msg_id].text or current_msg_map[msg.reply_to_msg_id].voice_description}"'
+                msg_str += f' <reply_to message_id={msg.reply_to_msg_id} quote=False> {members_map[current_msg_map[msg.reply_to_msg_id].user_id]["name"]}: {current_msg_map[msg.reply_to_msg_id].text or current_msg_map[msg.reply_to_msg_id].voice_description}<reply_to>'
         else:
             if msg.quote_from_reply:
-                msg_str += f' (reply to {msg.reply_to_msg_id} with quote) "{msg.quote_from_reply}"'
+                msg_str += f' <reply_to message_id={msg.reply_to_msg_id} quote=True> "{msg.quote_from_reply}" <reply_to>'
             else:
-                msg_str += f' (reply to {msg.reply_to_msg_id})'
+                msg_str += f' <reply_to message_id={msg.reply_to_msg_id} quote=False><reply_to>)'
 
     if msg.text or msg.is_voice or msg.is_sticker:
         msg_str += msg.text or msg.voice_description or msg.sticker_description
