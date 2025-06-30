@@ -123,7 +123,7 @@ async def ask_zhora_command(message: Message):
                     store=True
                 )
 
-            resp: str = response.text
+            resp: str = response.output_text
 
             await message.reply(resp)
 
