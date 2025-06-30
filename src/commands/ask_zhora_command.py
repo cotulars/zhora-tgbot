@@ -46,21 +46,12 @@ async def ask_zhora_command(message: Message):
                     input=[
                         {
                             "role": "system",
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": prompt
-                                }
-                            ]
+                            "content": f"{prompt}"
+
                         },
                         {
                             "role": "user",
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": f"{context}"
-                                }
-                            ]
+                            "content": f"{context}"
                         }
                     ],
                     text={
@@ -98,21 +89,11 @@ async def ask_zhora_command(message: Message):
                     input=[
                         {
                             "role": "developer",
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": prompt
-                                }
-                            ]
+                            "content": f"{prompt}"
                         },
                         {
                             "role": "user",
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": f"{context}"
-                                }
-                            ]
+                            "content":  f"{context}"
                         }
                     ],
                     text={
