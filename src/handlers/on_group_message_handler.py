@@ -128,6 +128,9 @@ class PersistAllMessagesMiddleware(BaseMiddleware):
                     and (bot.id in [member.id for member in event.message.new_chat_members])):
                 return await handler(event, data)
 
+            if msg.from_user.id == 867166409:
+                return []
+
             if not await UsersDB.is_user_exists(msg.from_user.id):
                 udb = UsersDB()
                 await udb.add_user(
