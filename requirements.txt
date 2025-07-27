@@ -6,3 +6,4 @@ Telethon~=1.40.0
 asyncpg
 aioredis
 google-genai
+beautifulsoup4

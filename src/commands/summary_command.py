@@ -16,14 +16,21 @@ dp.include_router(router)
 
 @router.message(Command("sum"), F.chat.type.in_({"group", "supergroup"}))
 async def summary_cmd(message: Message):
-    context = await generate_message_context(message.chat.id, count=500, tag='summary')
-
     msg = await message.reply("Выполняется...")
+
+    args = message.text.split(" ")
+
+    if len(args) > 1:
+        count = int(args[1])
+    else:
+        count = 500
+
+    context = await generate_message_context(message.chat.id, count=count, tag='summary')
 
     with open("./src/assets/prompts/summary_prompt.txt", "r") as f:
         prompt = f.read()
         response = await openai_client.chat.completions.create(
-            model="gpt-4.1-mini",
+            model="gpt-4.1",
             messages=[
                 {
                     "role": "system",

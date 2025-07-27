@@ -1,3 +1,4 @@
-Жора обновился до версии 0.1.6
+Zhora has been updated to 0.1.7
 
-Fix Redis vulnerability
+Update summary command
+Add new syntaxis /sum <msg_count>
