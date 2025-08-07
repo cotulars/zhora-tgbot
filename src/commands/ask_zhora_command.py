@@ -82,7 +82,6 @@ async def ask_zhora_command(message: Message):
                     },
                     store=True
                 )
-
             else:
                 response = await openai_client.responses.create(
                     model=BotSettingsDB.get_setting("bot_model"),
@@ -99,11 +98,12 @@ async def ask_zhora_command(message: Message):
                     text={
                         "format": {
                             "type": "text"
-                        }
+                        },
+                        "verbosity": "low"
                     },
                     reasoning={
-                        "effort": "medium",
-                        "summary": None
+                        "effort": BotSettingsDB.get_setting("reasoning_effort") or "medium",
+                        "summary": "auto"
                     },
                     tools=[
                         {
