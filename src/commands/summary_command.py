@@ -4,6 +4,7 @@ from aiogram.filters import Command
 from aiogram.enums.chat_type import ChatType
 
 from src.app import dp, bot, openai_client
+from src.database.domain.bot_settings_db import BotSettingsDB
 
 from src.database.domain.messages_db import MessagesDB
 from src.database.domain.users_db import UsersDB
@@ -29,14 +30,14 @@ async def summary_cmd(message: Message):
 
     with open("./src/assets/prompts/summary_prompt.txt", "r") as f:
         prompt = f.read()
-        response = await openai_client.chat.completions.create(
-            model="gpt-4.1",
-            messages=[
+        response = await openai_client.responses.create(
+            model=BotSettingsDB.get_setting("summary_model") or "gpt-5-nano",
+            input=[
                 {
-                    "role": "system",
+                    "role": "developer",
                     "content": [
                         {
-                            "type": "text",
+                            "type": "input_text",
                             "text": prompt
                         }
                     ]
@@ -45,20 +46,22 @@ async def summary_cmd(message: Message):
                     "role": "user",
                     "content": [
                         {
-                            "type": "text",
+                            "type": "input_text",
                             "text": context
                         }
                     ]
                 }
             ],
-            response_format={
-                "type": "text"
+            text={
+                "format": {
+                    "type": "text"
+                },
+                "verbosity": "medium"
             },
-            temperature=0.2,
-            max_completion_tokens=5000,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
+            reasoning={
+                "effort": "medium",
+                "summary": None
+            },
         )
 
         print(response.choices[0].message.content)

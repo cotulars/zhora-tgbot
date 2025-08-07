@@ -19,6 +19,54 @@ cotext_caching = {}
 members_list = []
 members_map: dict | None = None
 
+def get_default_tools() -> list[dict]:
+    return [{
+            "type": "web_search_preview",
+            "user_location": {
+                "type": "approximate"
+            },
+            "search_context_size": "medium"
+        },
+        {
+            "type": "function",
+            "name": "load_photo",
+            "description": "Load photo media directly into your context",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "media_id": {
+                        "type": "string",
+                        "description": "media id of the photo"
+                    }
+                },
+                "required": [
+                    "media_id"
+                ],
+                "additionalProperties": False
+            },
+            "strict": True
+        },
+        {
+            "type": "function",
+            "name": "ask_about_video",
+            "description": "Getting answer about video",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string",
+                        "description": "question related to video or what do you want to know about video"
+                    }
+                },
+                "required": [
+                    "question"
+                ],
+                "additionalProperties": False
+            },
+            "strict": True
+        },
+    ]
+
 def get_message_dict(msg, current_msg_map):
 
     msg_str = ''

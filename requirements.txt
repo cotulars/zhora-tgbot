@@ -1,5 +1,5 @@
 redis~=6.1.0
-openai~=1.78.1
+openai
 aiogram~=3.20.0.post0
 sqlalchemy~=2.0.41
 Telethon~=1.40.0
