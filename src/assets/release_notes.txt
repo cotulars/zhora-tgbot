@@ -1,4 +1,3 @@
 Zhora has been updated to 0.1.7
 
-Update summary command
-Add new syntaxis /sum <msg_count>
+Fix summary

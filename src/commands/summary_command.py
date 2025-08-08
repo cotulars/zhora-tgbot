@@ -64,11 +64,9 @@ async def summary_cmd(message: Message):
             },
         )
 
-        print(response.choices[0].message.content)
-
         article_url = await create_telegra_article(
                 title=f"Summary {message.date.strftime('%Y-%m-%d %H:%M')}",
-                html_content=response.choices[0].message.content
+                html_content=response.output_text
             )
         if article_url:
             await bot.edit_message_text(
