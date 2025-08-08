@@ -39,7 +39,7 @@ async def ask_zhora_command(message: Message):
         context = await generate_message_context(message.chat.id, count=60, tag='ask_zhora', threshold=40)
 
         with open("./src/assets/prompts/ask_prompt.txt", "r") as f:
-            prompt = f.read()
+            prompt = BotSettingsDB.get_setting("prompt") or f.read()
             if BotSettingsDB.get_setting("is_thinking_model") != "True":
                 response = await openai_client.responses.create(
                     model=BotSettingsDB.get_setting("bot_model") or "gpt-4.1-mini",
@@ -99,7 +99,7 @@ async def ask_zhora_command(message: Message):
                         "format": {
                             "type": "text"
                         },
-                        "verbosity": "low"
+                        "verbosity": BotSettingsDB.get_setting("verbosity") or "low"
                     },
                     reasoning={
                         "effort": BotSettingsDB.get_setting("reasoning_effort") or "medium",

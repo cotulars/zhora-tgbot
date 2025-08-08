@@ -1,3 +1,5 @@
-Zhora has been updated to 0.1.7
+Zhora has been updated to 0.1.8
 
-Fix summary
+Update system prompt
+Add verbosity setting
+Add prompt hotswap
