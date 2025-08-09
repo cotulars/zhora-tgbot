@@ -1,5 +1,4 @@
 Zhora has been updated to 0.1.8
 
-Update system prompt
-Add verbosity setting
-Add prompt hotswap
+Zew been banned
+GPT-5 been removed
