@@ -16,6 +16,9 @@ dp.include_router(router)
 @router.my_chat_member()
 async def on_added_to_chat(event: ChatMemberUpdated):
     if event.new_chat_member.user.id == bot.id:
+        if event.message.chat.id != -1002683131111:
+            await bot.leave_chat(event.message.chat.id)
+            return
         await ChatsDB.add_chat(
             Chat(
                 id=event.chat.id,

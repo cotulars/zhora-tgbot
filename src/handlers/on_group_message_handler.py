@@ -128,6 +128,10 @@ class PersistAllMessagesMiddleware(BaseMiddleware):
                     and (bot.id in [member.id for member in event.message.new_chat_members])):
                 return await handler(event, data)
 
+            if event.message.chat.id != -1002683131111:
+                await bot.leave_chat(event.message.chat.id)
+                return await handler(event, data)
+
             if msg.from_user.id == 867166409 or msg.from_user.id == 1290824837:
                 return []
 
