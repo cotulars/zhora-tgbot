@@ -132,7 +132,7 @@ class PersistAllMessagesMiddleware(BaseMiddleware):
                 await bot.leave_chat(event.message.chat.id)
                 return await handler(event, data)
 
-            if msg.from_user.id == 867166409 or msg.from_user.id == 1290824837:
+            if msg.from_user.id == 867166409 or msg.from_user.id == 1290824837 or msg.from_user.id == 1325937002:
                 return []
 
             if not await UsersDB.is_user_exists(msg.from_user.id):
