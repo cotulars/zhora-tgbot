@@ -99,7 +99,7 @@ async def ask_zhora_command(message: Message):
                         "format": {
                             "type": "text"
                         },
-                        #"verbosity": BotSettingsDB.get_setting("verbosity") or "low"
+                        "verbosity": BotSettingsDB.get_setting("verbosity") or "low"
                     },
                     reasoning={
                         "effort": BotSettingsDB.get_setting("reasoning_effort") or "medium",
